@@ -12,6 +12,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/vercel": "^10.0.8",
     "@storyblok/astro": "^9.0.11",
     "astro": "^6.4.2"
