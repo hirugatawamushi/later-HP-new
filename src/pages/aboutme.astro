@@ -1,8 +1,8 @@
 ---
-import { useStoryblokApi } from '@storyblok/astro'
+import { storyblokEditable } from '@storyblok/astro'
 import WorkLayout from '../layouts/WorkLayout.astro'
 
-const storyblokApi = useStoryblokApi()
+const storyblokApi = storyblokEditable()
 let profile = null
 
 try {
@@ -362,4 +362,12 @@ try {
   .submit-button:hover {
     background: #666;
   }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* 横スクロールで白が見えるのを防ぐお守り */
+}
+  
 </style>
