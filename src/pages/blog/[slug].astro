@@ -1,5 +1,5 @@
 ---
-import { useStoryblokApi, renderRichText } from '@storyblok/astro'
+import { storyblokEditable, renderRichText } from '@storyblok/astro'
 import WorkLayout from '../../layouts/WorkLayout.astro'
 
 // 💡 1. この1行を足して、後からStoryblokで増えた記事もその場で自動生成させます！
@@ -21,10 +21,10 @@ interface Props {
   };
 }
 
-// 💡 prerender = false にしたため、getStaticPaths はもう書かなくて大丈夫になります！
+
 // 代わりに、アクセスされたURL（slug）から直接Storyblokのデータを一本釣りします。
 const { slug } = Astro.params;
-const storyblokApi = useStoryblokApi()
+const storyblokApi = storyblokEditable()
 let story = null
 
 try {

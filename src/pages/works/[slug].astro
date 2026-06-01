@@ -8,8 +8,7 @@ export const prerender = false;
 
 // Astro.propsではなく、URLの[slug]から直接Storyblokの最新データを一本釣りします
 const { slug } = Astro.params;
-const storyblokApi = storybl
-okEditable()
+const storyblokApi = useStoryblokApi()
 let story = null
 
 try {
