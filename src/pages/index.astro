@@ -17,19 +17,19 @@ try {
     version: 'published',
   });
 
-  // 💡 安全装置をモリモリに強化しました！
-  if (data?.story?.content?.body) {
-    galleryBlok = data.story.content.body.find((b) => b?.component === 'GridGallery');
+ // ⭕️ 安全ガード
+  if (data && data.story && data.story.content && data.story.content.body) {
+    galleryBlok = data.story.content.body.find((b) => b && b.component === 'GridGallery');
   }
-  
-  // 💡 もし見つからなかったら、空っぽの安全なオブジェクトを入れて爆発を防ぐ
-  if (!galleryBlok) {
-    galleryBlok = { component: 'GridGallery', _uid: 'default-gallery' };
-  }
-
 } catch (e) {
   console.error("Homeデータの取得に失敗しました:", e);
 }
+
+// ⭕️ 最強の安全ガード
+if (!galleryBlok) {
+  galleryBlok = { component: 'GridGallery', _uid: 'default-index-gallery', body: [] };
+}
+
 ---
 
 <html lang="ja">
