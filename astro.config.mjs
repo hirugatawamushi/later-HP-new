@@ -16,7 +16,7 @@ export default defineConfig({
         teaser: 'storyblok/Teaser',
         // grid: 'storyblok/Grid',
         feature: 'storyblok/feature',
-        about: 'storyblok/About', 
+        about: 'storyblok/about', 
         GridGallery: 'components/GridGallery',
         image: 'storyblok/image',
         richtext: 'storyblok/richtext',
