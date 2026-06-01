@@ -14,7 +14,7 @@ let galleryBlok = null;
 
 try {
   const { data } = await storyblokApi.get('cdn/stories/home', {
-    version: import.meta.env.DEV ? 'draft' : 'published',
+    version: 'published',
   });
 
   // 💡 安全装置をモリモリに強化しました！
