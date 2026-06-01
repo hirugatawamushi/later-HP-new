@@ -1,5 +1,5 @@
 ---
-import { storyblokEditable, renderRichText } from '@storyblok/astro'
+import { useStoryblokApi, renderRichText } from '@storyblok/astro'
 import WorkLayout from '../../layouts/WorkLayout.astro'
 
 // 💡 1. この1行を足して、後からStoryblokで増えた記事もその場で自動生成させます！
@@ -24,7 +24,7 @@ interface Props {
 
 // 代わりに、アクセスされたURL（slug）から直接Storyblokのデータを一本釣りします。
 const { slug } = Astro.params;
-const storyblokApi = storyblokEditable()
+const storyblokApi = useStoryblokApi();
 let story = null
 
 try {
