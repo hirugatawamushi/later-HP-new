@@ -1,18 +1,20 @@
 ---
-import { storyblokEditable } from '@storyblok/astro';
-// 💡 爆発の原因だった StoryblokComponent を使わずに、ギャラリーを直接狙い撃ちします
+// 📄 src/pages/home.astro
+// ❌ 以前の「storyblokEditable」を消して、正しい「useStoryblokApi」を呼び出す！
+import { useStoryblokApi } from '@storyblok/astro';
 import GridGallery from '../components/GridGallery.astro'; 
 import Header from '../components/Header.astro';
-import BaseHead from '../components/BaseHead.astro'; // 💡 せっかく作った安全版の頭脳をここで使います！
+import BaseHead from '../components/BaseHead.astro';
 
-const storyblokApi = storyblokEditable();
+// ⭕️ 正しい魔法の名前に修正！
+const storyblokApi = useStoryblokApi();
 let galleryBlok = null;
 
 try {
   const { data } = await storyblokApi.get('cdn/stories/home', {
     version: import.meta.env.DEV ? 'draft' : 'published',
   });
-
+  
   // 💡 Homeのデータの中から、エラーの元になる余計なものを無視して、
   // いつもの「作品ギャラリー（GridGallery）」のデータだけを安全に抜き出します
   if (data.story?.content?.body) {
