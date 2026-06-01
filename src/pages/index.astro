@@ -1,6 +1,6 @@
 ---
 // 📄 src/pages/index.astro
-import { useStoryblokApi } from '@storyblok/astro';
+import { useStoryblokApi } from '@storyblok/astro/app';
 import GridGallery from '../components/GridGallery.astro'; 
 import Header from '../components/Header.astro';
 import BaseHead from '../components/BaseHead.astro';
@@ -51,7 +51,7 @@ try {
     </div>
 
     <script>
-      import { useStoryblok } from '@storyblok/astro';
+      import { useStoryblok } from '@storyblok/astro/app';
       useStoryblok();
     </script>
   </body>
