@@ -1,0 +1,31 @@
+---
+// これが「画像を表示するためのコンポーネント」です
+// 📄 src/storyblok/image.astro
+const { blok } = Astro.props
+
+// Storyblokで選んだサイズを取得（英語に直してくれたのでsmall/medium/largeでOK！）
+const imageSize = blok.size || 'medium';
+
+// 選ばれたサイズに応じて、横幅の数字（px）を直接決める
+let maxWidth = '500px'; // デフォルト（中くらい）
+
+if (imageSize === 'small') {
+  maxWidth = '250px';  // 小さめ
+} else if (imageSize === 'large') {
+  maxWidth = '900px';  // 大きめ
+}
+
+// console.log(`【最終確認】選ばれたサイズ: ${imageSize}, 適用するmaxWidth: ${maxWidth}`);
+---
+
+<!-- {/* 🧱 1. 外枠（div）のサイズを250pxや900pxにガチッと固定します */} -->
+<div style={`width: 100%; max-width: ${maxWidth}; margin: 2rem auto; display: flex; justify-content: center;`}>
+  {blok.image?.filename && (
+    /* 🖼️ 2. 画像本体に「絶対に上の外枠（250pxなど）からはみ出るなよ！」と命令します */
+    <img 
+      src={blok.image.filename} 
+      alt={blok.alt || ''} 
+      style="width: 100%; max-width: 100%; height: auto; display: block; object-fit: contain;" 
+    />
+  )}
+</div>

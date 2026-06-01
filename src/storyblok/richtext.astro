@@ -1,0 +1,40 @@
+---
+// 📄 src/storyblok/richtext.astro
+import { renderRichText } from '@storyblok/astro'
+const { blok } = Astro.props
+
+// 魔法の翻訳機を通す
+const renderedText = renderRichText(blok.text)
+---
+
+<div class="storyblok-text-wrapper">
+  {/* 💡 set:html を使って、Storyblokで設定した色や大きさをそのまま出力します */}
+  <div class="actual-content" set:html={renderedText} />
+</div>
+
+<style>
+  .storyblok-text-wrapper {
+    width: 100%;
+    /* 💡 タイトルが大画面でも綺麗に中央に収まるように、最大幅を少し広げました */
+    max-width: 800px;
+    margin: 2.5rem auto;
+  }
+
+  /* --- 🎨 リッチテキストの中身をオシャレに整える共通設定 --- */
+  .actual-content {
+    line-height: 1.8;
+    color: #ffffff; /* 基本は白文字 */
+  }
+
+  /* 💡 Storyblok側で「中央寄せ」にした時、ちゃんと真ん中に来るようにするお守り */
+  .actual-content :global(.text-center),
+  .actual-content :global(p) {
+    text-align: center;
+    margin: 0 0 1rem 0;
+  }
+
+  /* 💡 もしStoryblok側で色をつけたりサイズを変えたりしたら、その設定を最優先する */
+  .actual-content :global(span) {
+    display: inline-block;
+  }
+</style>

@@ -1,0 +1,156 @@
+---
+// 📄 src/pages/blog/index.astro
+import { useStoryblokApi } from '@storyblok/astro'
+import Header from '../../components/Header.astro'
+import BaseHead from '../../components/BaseHead.astro'
+
+const storyblokApi = useStoryblokApi()
+let posts = null; // 💡 最初は null（まだデータがない状態）にしておく
+
+try {
+  const { data } = await storyblokApi.get('cdn/stories', {
+    version: import.meta.env.DEV ? 'draft' : 'published',
+    starts_with: 'blog/', // 👈 あとでここを実際のフォルダ名に調整します！
+    cv: Date.now(), 
+  });
+  
+  if (data && data.stories) {
+    posts = data.stories;
+  }
+} catch (error) {
+  console.error("データ取得エラー:", error);
+}
+---
+
+<html lang="ja">
+  <head>
+    <BaseHead title="BLOG" description="ブログ一覧" />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <Header />
+      
+      <main class="main-content">
+        <h1 class="page-title">BLOG</h1>
+        
+        <div class="blog-grid">
+          {/* 💡 posts にデータがちゃんと入っているときだけループを回す（真っ白防止策！） */}
+          {posts && posts.length > 0 ? (
+            posts.map((post) => {
+              const blogTitle = post.content?.title || post.name;
+              
+              let displayDate = '';
+              const rawDate = post.content?.date || post.first_published_at || post.published_at || "";
+              if (rawDate) {
+                const dateOnly = rawDate.includes('T') ? rawDate.split('T')[0] : rawDate.split(' ')[0];
+                displayDate = dateOnly.replace(/-/g, '.');
+              }
+
+              return (
+                <a href={`/blog/${post.slug}`} class="blog-card">
+                  <div class="blog-info">
+                    <span class="blog-date">{displayDate}</span>
+                    <span class="blog-category">{post.content?.type || '日常'}</span>
+                  </div>
+                  <h2 class="blog-title">{blogTitle}</h2>
+                </a>
+              );
+            })
+          ) : (
+            /* 💡 データが取れなかったときは、真っ白にせずこのメッセージを画面に出す */
+            <div style="text-align: center; color: #8c8c8c; padding: 4rem 0; background: rgba(255,255,255,0.02); border-radius: 4px;">
+              <p style="margin: 0 0 1rem 0;">ブログ記事（データ）が読み込めませんでした 😢</p>
+              <p style="font-size: 0.85rem; color: #666; margin: 0;">Storyblokのフォルダ名が「Blog/」であっているか確認してみてください。</p>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #000000;
+  }
+
+  .site-wrapper {
+    min-height: 100vh;
+    position: relative;
+    background-image: url('/LaterHPhaikei.jpg'); 
+    background-repeat: repeat; 
+    background-size: auto; 
+  }
+
+  .main-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem;
+  }
+
+  .page-title {
+    color: #fff;
+    font-size: 1.8rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .blog-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .blog-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .blog-info {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .blog-date {
+    color: #8c8c8c;
+  }
+
+  .blog-category {
+    color: #ccc;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1px 8px;
+    border-radius: 2px;
+  }
+
+  .blog-title {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #fff;
+    font-weight: normal;
+    letter-spacing: 0.03em;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+</style>

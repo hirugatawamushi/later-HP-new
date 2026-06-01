@@ -1,0 +1,200 @@
+---
+// ヘッダー　（天使やロゴ）の編集はこちら
+---
+
+<header class="header">
+  <div class="header-container">
+    <a href="/" class="logo">
+      <img src="/天使トリミング.gif" alt="Angel" class="angel-gif" />
+      <img src="/レイタアロゴ白.png" alt="logo" class="logo-title" />
+    </a>
+
+    <nav class="desktop-nav">
+      <a href="/">アートワークス</a>
+      <a href="/aboutme">わたし</a>
+      <a href="/songs">曲</a>
+      <a href="/blog">回想標本</a>
+    </nav>
+
+    <button class="hamburger" id="hamburger" aria-label="メニューを開く">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <nav class="mobile-nav" id="mobile-nav">
+    <a href="/">アートワークス</a>
+    <a href="/aboutme">わたし</a>
+    <a href="/songs">曲</a>
+    <a href="/blog">回想標本</a>
+  </nav>
+</header>
+
+<style>
+  /* --- 💻 ここからは「パソコン（画面が広いとき）」の設定 --- */
+  .header {
+    padding: 3rem 1.5rem 2rem 1.5rem;
+    background: transparent;
+    position: relative;
+    z-index: 100;
+  }
+  
+  .header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    width: 100%;
+  }
+
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    gap: 0rem;
+    max-width: 100%; /* 画面からはみ出さないようにガード */
+  }
+
+  .angel-gif {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+    image-rendering: -webkit-optimize-contrast;
+    margin-bottom: -30px;
+  }
+
+  .logo-title {
+    width: auto;
+    height: 100px; /* パソコンでのロゴ画像の高さ */
+    max-width: 90vw; /* 画面幅の90%以上は絶対に大きくならないお守り */
+    object-fit: contain;
+    /* margin: 0; */
+  }
+
+  .desktop-nav {
+    display: flex;
+    gap: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 4rem;
+  }
+
+  .desktop-nav a {
+    text-decoration: none;
+    color: #eee;
+    font-size: 0.95rem;
+    letter-spacing: 0.1em;
+    transition: color 0.3s;
+    white-space: nowrap; /* 文字が途中で勝手に改行されるのを防ぐ */
+  }
+
+  .desktop-nav a:hover {
+    color: #fff;
+  }
+
+  .hamburger {
+    display: none;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 110;
+  }
+
+  .hamburger span {
+    width: 24px;
+    height: 1.5px;
+    background: #fff;
+    transition: all 0.3s;
+  }
+
+  .mobile-nav {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 0;
+    background: rgba(40, 55, 60, 0.95); /* 背景のブルーグレーになじむ色 */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+
+  .mobile-nav a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 1.1rem;
+  }
+
+  /* --- 📱 ここからが「スマホ（画面幅が768px以下）」の自動調節ルール --- */
+  @media (max-width: 768px) {
+    .header {
+      padding: 1rem; /* 全体の余白をスマホ用に狭く */
+    }
+    
+    .header-container {
+    flex-direction: column; /* 🟢 スマホでも縦並び（中央寄せ）をキープ！ */
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      position: relative; /* ボタンを右端に浮かせるための基準点 */
+    }
+    
+    .logo {
+     flex-direction: column; /* 🟢 天使が上、文字画像が下の「縦並び」をキープ！ */
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .angel-gif {
+      width: 50px; /* スマホに合わせて天使を縮小 */
+      height: 50px;
+      margin-bottom: -25px;
+    }
+    
+    .logo-title {
+      height: 50px; /* 💡 スマホの画面幅に合わせてロゴ画像を自動で小さく！ */
+      max-width: 60vw; /* 他のパーツを潰さないように横幅の上限を固定 */
+    }
+    
+    .desktop-nav {
+      display: none; /* パソコン用メニューを消す */
+    }
+    
+    .hamburger {
+     display: flex; /* ボタンを出現させる */
+      position: absolute; /* 浮かせる */
+      right: 0.5rem; /* 右端からの距離 */
+      top: 5px; /* 縦の位置（天使の横あたりにくるように微調整してね！） */
+      transform: none;
+    }
+    
+    .mobile-nav.open {
+      display: flex; /* ボタンを押したときだけメニューが出る */
+    }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('hamburger');
+  const nav = document.getElementById('mobile-nav');
+
+  btn?.addEventListener('click', () => {
+    nav?.classList.toggle('open');
+  });
+</script>

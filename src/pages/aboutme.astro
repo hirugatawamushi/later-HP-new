@@ -1,0 +1,365 @@
+---
+import { useStoryblokApi } from '@storyblok/astro'
+import WorkLayout from '../layouts/WorkLayout.astro'
+
+const storyblokApi = useStoryblokApi()
+let profile = null
+
+try {
+  // Storyblokから「aboutme」というURL（Slug）のデータを一本釣りします
+  const { data } = await storyblokApi.get('cdn/stories/aboutme', {
+    version: import.meta.env.DEV ? 'draft' : 'published',
+  })
+  profile = data.story
+} catch (e) {
+  console.error("プロフィールデータの取得に失敗しました:", e)
+}
+---
+
+<WorkLayout title="About Me">
+  <main class="about-page">
+    <div class="container">
+      <a href="/" class="back-button">← 戻る</a>
+      
+      {profile ? (
+        <article class="about-content">
+          {/* 1. プロフィール画像（丸型、またはそのまま表示） */}
+          <div class="profile-image-wrapper">
+            {profile.content?.image?.filename ? (
+              <img src={profile.content.image.filename} alt={profile.content?.name || 'Profile'} class="profile-image" />
+            ) : (
+              <div class="no-profile-image">No Image</div>
+            )}
+          </div>
+          
+          {/* 2. 名前と自己紹介テキスト */}
+          <div class="profile-text-wrapper">
+            <h1 class="profile-name">{profile.content?.name || '名前が未設定です'}</h1>
+            <p class="profile-bio">{profile.content?.setumei || '自己紹介文が未設定です。'}</p>
+            
+            {/* 💡 SNSセクション */}
+            <div class="sns-section">
+              <div class="sns-list">
+                <div class="sns-item">
+                  <a href="https://x.com/laterlilie" target="_blank" rel="noopener noreferrer" class="sns-link">
+                    <span class="sns-icon x-icon">
+                      <img src="/X黒.png" alt="X" />
+                    </span>
+                    <div class="sns-info">
+                      <span class="sns-desc">低浮上、一時創作多め</span>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="sns-item">
+                  <a href="https://www.pixiv.net/users/61248699" target="_blank" rel="noopener noreferrer" class="sns-link">
+                    <span class="sns-icon pixiv-icon">
+                      <img src="/pixivアイコン.png" alt="pixiv" />
+                    </span>
+                    <div class="sns-info">
+                      <span class="sns-desc">殴り書きの設定資料など</span>
+                    </div>
+                  </a>
+                </div>
+                {/* 💡 今後使うときは、コメントアウト外す*/}
+                {/* <div class="sns-item">
+                  <a href="https://あなたのショップID.booth.pm/" target="_blank" rel="noopener noreferrer" class="sns-link">
+                    <span class="sns-icon">📦</span>
+                    <div class="sns-info">
+                      <span class="sns-name">BOOTH</span>
+                      <span class="sns-desc">グッズ販売</span>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="sns-item s-coming-soon">
+                  <div class="sns-link">
+                    <span class="sns-icon">🎮</span>
+                    <div class="sns-info">
+                      <span class="sns-name">Steam <small class="coming-text">(Coming Soon)</small></span>
+                      <span class="sns-desc">自作ゲーム</span>
+                    </div>
+                  </div>
+                </div>
+                */}
+                {/* ここまでのコメントアウトを外せばOK！ */}
+              </div>
+            </div>
+
+            {/* 💡 追加：世界観を壊さないお便りフォーム（Netlify自動認識型） */}
+            <div class="contact-section">
+              <h2 class="contact-title">問い合わせ (Contact)</h2>
+              <p class="contact-intro">返信は遅くなるかもしれません。</p>
+              
+              <form name="contact" method="POST" data-netlify="true" class="contact-form">
+                <input type="hidden" name="form-name" value="contact" />
+
+                <div class="form-group">
+                  <label for="name">お名前</label>
+                  <input type="text" id="name" name="name" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="email">お返事の宛先</label>
+                  <input type="email" id="email" name="email" placeholder="your@email.com" required />
+                </div>
+
+                <div class="form-group">
+                  <label for="message">本文</label>
+                  <textarea id="message" name="message" rows="5" placeholder="・・・." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-button">投函する</button>
+              </form>
+            </div>
+            
+          </div>
+        </article>
+      ) : (
+        <p class="error-message">Storyblok側で「aboutme」というページが公開（Publish）されていないか、読み込み中です…</p>
+      )}
+    </div>
+  </main>
+</WorkLayout>
+
+<style>
+  /* --- 🌙 自己紹介ページのカスタムスタイリング --- */
+  
+  .about-page {
+    padding: 4rem 1.5rem;
+    min-height: 100vh;
+    background-color: #e2e2e2;
+    color: #8c8c8c;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    display: inline-block;
+    color: #8c8c8c;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+    transition: opacity 0.3s;
+  }
+
+  .back-button:hover {
+    opacity: 0.6;
+  }
+
+  .about-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .profile-image-wrapper {
+    width: 200px;
+    height: 200px;
+    background: transparent;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: none;
+  }
+
+  .profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-text-wrapper {
+    width: 100%;
+    text-align: center;
+  }
+
+  .profile-name {
+    font-size: 1.8rem;
+    color: #666;
+    margin: 0 0 1.5rem 0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
+  .profile-bio {
+    font-size: 0.95rem;
+    color: #888;
+    line-height: 2.0;
+    white-space: pre-wrap;
+    letter-spacing: 0.04em;
+    text-align: left;
+    margin-bottom: 4rem;
+  }
+
+  .no-profile-image {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    background: rgba(0, 0, 0, 0.05);
+    font-size: 0.9rem;
+  }
+
+  .error-message {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    padding: 4rem 0;
+  }
+
+  /* --- 🌙 SNSセクションのスタイリング --- */
+  .sns-section {
+    width: 100%;
+    border-top: 1px solid #d4d4d4;
+    padding-top: 3rem;
+  }
+
+  .sns-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sns-item {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  .sns-item:not(.s-coming-soon):hover {
+    background: rgba(0, 0, 0, 0.02);
+    border-color: #d4d4d4;
+  }
+
+  .sns-link {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    text-align: left;
+  }
+
+  .sns-icon {
+    width: 22px; /* 💡 画像アイコンに最適化 */
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* 💡 XとPixivの画像アイコンを綺麗に白黒・同サイズで揃える魔法 */
+  .sns-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: grayscale(1); /* 最初は世界観に馴染むようにモノクロ */
+    opacity: 0.7;
+    transition: filter 0.3s, opacity 0.3s;
+  }
+  
+  .sns-item:hover .sns-icon img {
+    filter: grayscale(0); /* ホバーした時だけ元の色になる */
+    opacity: 1;
+  }
+
+  .sns-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .sns-desc {
+    font-size: 0.85rem;
+    color: #888;
+    line-height: 1.4;
+  }
+
+  /* --- 📩 問い合わせフォームのスタイリング --- */
+  .contact-section {
+    width: 100%;
+    margin-top: 5rem;
+    border-top: 1px solid #d4d4d4;
+    padding-top: 3rem;
+  }
+
+  .contact-title {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+
+  .contact-intro {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 2.5rem;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.8rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  .form-group label {
+    font-size: 0.85rem;
+    color: #666;
+    letter-spacing: 0.03em;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #555;
+    font-family: inherit;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #8c8c8c;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .submit-button {
+    align-self: center;
+    padding: 0.8rem 4rem;
+    background: #7a7a7a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+  }
+
+  .submit-button:hover {
+    background: #666;
+  }
+</style>

@@ -1,0 +1,159 @@
+---
+import { useStoryblokApi, renderRichText } from '@storyblok/astro'
+import WorkLayout from '../../layouts/WorkLayout.astro'
+
+// 💡 1. この1行を足して、後からStoryblokで増えた記事もその場で自動生成させます！
+export const prerender = false;
+
+interface Props {
+  story: {
+    name: string;
+    slug: string;
+    content: {
+      title?: string;
+      date?: string;
+      type?: string;
+      content?: any;
+      cover_image?: {
+        filename?: string;
+      };
+    };
+  };
+}
+
+// 💡 prerender = false にしたため、getStaticPaths はもう書かなくて大丈夫になります！
+// 代わりに、アクセスされたURL（slug）から直接Storyblokのデータを一本釣りします。
+const { slug } = Astro.params;
+const storyblokApi = useStoryblokApi()
+let story = null
+
+try {
+  const { data } = await storyblokApi.get(`cdn/stories/blog/${slug}`, {
+    version: import.meta.env.DEV ? 'draft' : 'published',
+  })
+  story = data.story
+} catch (e) {
+  console.error(`記事 [${slug}] の取得に失敗しました:`, e)
+}
+
+// 本文のレンダリング（データがあるときだけ安全に実行）
+const renderedContent = story ? renderRichText(story.content?.content) : '';
+---
+
+<!-- {/* 💡 すべて小文字の「title」に修正しました */} -->
+<WorkLayout title={story ? (story.content?.title || '回想標本') : '回想標本'}>
+  {story && (
+    <main class="blog-detail-page">
+      <div class="container">
+        <a href="/blog" class="back-button">← 一覧へ</a>
+        
+        <article class="post-article">
+          <header class="post-header">
+            <div class="post-meta">
+              {/* 💡 日付（date）を小文字にし、さらにカテゴリ（type）が登録されていれば一緒に並べて表示します */}
+              <span class="post-date">{story.content?.date || '日付未設定'}</span>
+              {story.content?.type && (
+                <span class="post-type">[{story.content.type}]</span>
+              )}
+            </div>
+
+            <h1 class="post-title">{story.content?.title || story.name}</h1>
+          </header>
+
+          {/* もしカバー画像（cover_image）を登録していれば表示します */}
+          {story.content?.cover_image?.filename && (
+            <div class="post-cover-wrapper">
+              <img src={story.content.cover_image?.filename} alt={story.content?.title} class="post-cover" />
+            </div>
+          )}
+          
+          <div class="post-content" set:html={renderedContent} />
+        </article>
+      </div>
+    </main>
+  )}
+</WorkLayout>
+
+<style>
+  /* --- 🌙 回想標本 詳細ページのカスタムスタイリング --- */
+  .blog-detail-page {
+    padding: 4rem 1.5rem;
+    min-height: 100vh;
+    background-color: #e2e2e2;
+    color: #8c8c8c;
+  }
+
+  .container {
+    max-width: 650px;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    display: inline-block;
+    color: #8c8c8c;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+  }
+
+  .post-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .post-meta {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+    color: #aaa;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  /* カテゴリ（日常・作品）の見た目 */
+  .post-type {
+    color: #9c9c9c;
+  }
+
+
+  .post-title {
+    font-size: 1.6rem;
+    color: #555;
+    margin: 0;
+    font-weight: 400;
+    line-height: 1.4;
+    letter-spacing: 0.03em;
+  }
+
+  .post-cover-wrapper {
+    width: 100%;
+    max-height: 400px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+
+  .post-cover {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .post-content {
+    font-size: 0.95rem;
+    color: #777;
+    line-height: 2.0;
+    letter-spacing: 0.04em;
+  }
+
+  .post-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    margin: 2rem 0;
+    display: block;
+  }
+
+  .post-content :global(p) {
+    margin-bottom: 1.5rem;
+  }
+</style>

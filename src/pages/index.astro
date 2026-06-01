@@ -1,0 +1,81 @@
+---
+// 📄 src/pages/index.astro
+import { useStoryblokApi } from '@storyblok/astro';
+import GridGallery from '../components/GridGallery.astro'; 
+import Header from '../components/Header.astro';
+import BaseHead from '../components/BaseHead.astro';
+
+const storyblokApi = useStoryblokApi();
+let galleryBlok = null;
+
+try {
+  const { data } = await storyblokApi.get('cdn/stories/home', {
+    version: import.meta.env.DEV ? 'draft' : 'published',
+  });
+
+  // 💡 安全装置をモリモリに強化しました！
+  if (data?.story?.content?.body) {
+    galleryBlok = data.story.content.body.find((b) => b?.component === 'GridGallery');
+  }
+  
+  // 💡 もし見つからなかったら、空っぽの安全なオブジェクトを入れて爆発を防ぐ
+  if (!galleryBlok) {
+    galleryBlok = { component: 'GridGallery', _uid: 'default-gallery' };
+  }
+
+} catch (e) {
+  console.error("Homeデータの取得に失敗しました:", e);
+}
+---
+
+<html lang="ja">
+  <head>
+    {/* 💡 さっき作った「超シンプル完全安全版」のBaseHeadに差し替えて頭脳を綺麗に統一！ */}
+    <BaseHead title="HOME" description="レイタのポートフォリオ" />
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <Header />
+      
+      <main class="main-content">
+        {/* 💡 エラーになる自動組み立て（StoryblokComponent）をやめて、
+            ギャラリーのデータがあるときだけ安全に表示する形にガードしました */}
+        {galleryBlok ? (
+          <GridGallery blok={galleryBlok} />
+        ) : (
+          <p style="text-align: center; color: #8c8c8c; padding: 4rem 0;">
+            Storyblok側に作品ギャラリー（GridGallery）が配置されていないか、読み込み中です…
+          </p>
+        )}
+      </main>
+    </div>
+
+    <script>
+      import { useStoryblok } from '@storyblok/astro';
+      useStoryblok();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #000000;
+  }
+
+  .site-wrapper {
+    min-height: 100vh;
+    position: relative;
+    background-image: url('/LaterHPhaikei.jpg'); 
+    background-repeat: repeat; 
+    background-size: auto; 
+  }
+
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+  }
+</style>A

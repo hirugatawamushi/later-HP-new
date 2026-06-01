@@ -1,0 +1,154 @@
+---
+import { useStoryblokApi } from '@storyblok/astro'
+
+const storyblokApi = useStoryblokApi()
+
+const { data } = await storyblokApi.get('cdn/stories', {
+  version: import.meta.env.DEV ? 'draft' : 'published',
+  starts_with: 'works/', // 👈 Storyblokのworksフォルダ内のデータを対象にする
+  
+  // 👇 【ココを追加！】最新バージョンでも中身のデータを強制的に全部引っ張ってくるお守り
+  cv: Date.now(), 
+})
+
+const posts = data.stories
+---
+
+<div class="gallery-wrapper">
+  <div class="gallery-grid">
+    {posts.map((post) => {
+      // ✨ 共通で使う「リッチテキストの文字を引っこ抜く」処理をここで1回だけスマートに定義します
+      const richTitleText = post.content?.body?.find(b => b.component === 'Richtext')?.text?.content?.[0]?.content?.[0]?.text;
+      // リッチテキストに文字があればそれを使い、なければStoryblokのページ名（post.name）を代わりに使う
+      const displayTitle = richTitleText || post.name;
+
+      return (
+        /* 🟢 クリックしたら自動生成された詳細ページ（/works/〜）にジャンプするリンク */
+        <a href={`/works/${post.slug}`} class="gallery-item">
+          <div class="image-box">
+            {/* 作品のメイン画像を表示 */}
+            <img src={post.content?.samune?.filename} alt={displayTitle} class="gallery-image" />
+            
+            {/* ホバーした時に、作品名がふわっと浮き出るおしゃれ演出 */}
+            <div class="overlay">
+              {/* 💡 ここも詳細ページのリッチテキストと自動連動！ */}
+              <span class="hover-title">{displayTitle}</span>
+            </div>
+          </div>
+          
+          {/* 画像の下に表示するタイトル（タグの噛み合わせも綺麗に修正しました） */}
+          <div class="item-info">
+            {/* 💡 ここも詳細ページのリッチテキストと自動連動！ */}
+            <p class="item-title">{displayTitle}</p>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+</div>
+
+<style>
+  /* --- 🌙 ギャラリーを正方形のタイル状に並べる魔法のCSS --- */
+  .gallery-wrapper {
+    width: 100%;
+    padding: 2rem 0;
+  }
+
+  .gallery-grid {
+    display: grid;
+    /* 🟢 画面の横幅に合わせて、自動で3列や2列に並び替える（レスポンシブ） */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2.5rem; /* 画像と画像のあいだの隙間 */
+  }
+
+  .gallery-item {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    transition: transform 0.3s ease;
+    container-type: inline-size;
+  }
+
+  .gallery-item:hover {
+    transform: translateY(-4px); /* ホバーした時にちょっとだけ上に浮く */
+  }
+
+  /* 🟢 画像を強制的に綺麗な「正方形」にする設定 */
+  .image-box {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* 縦横比を 1:1 の正方形に固定！ */
+    position: relative;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-radius: 2px;
+  }
+
+  .gallery-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 縦長や横長の画像でも、正方形の中に綺麗に収まるよう自動トリミング */
+    transition: transform 0.5s ease;
+  }
+
+  /* ホバー時に画像をちょっとズームする */
+  .gallery-item:hover .gallery-image {
+    transform: scale(1.05);
+  }
+
+  /* マウスを乗せた時の黒い半透明のモヤ */
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .gallery-item:hover .overlay {
+    opacity: 1;
+  }
+
+  .hover-title {
+    color: #fff;
+    /* 💡 枠の幅に合わせて文字サイズを1.1rem〜0.8remの間で自動伸縮させます */
+    font-size: clamp(0.8rem, 4.5cqw, 1.1rem);
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+    padding-bottom: 4px;
+    
+    /* 💡 絶対に途中で改行させず、1行に収める魔法 */
+    white-space: nowrap; 
+  }
+  /* 画像の下の文字情報 */
+  .item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    
+    /* 💡 子要素（文字）がはみ出さないように枠を制御する設定 */
+    width: 100%;
+    overflow: hidden;
+  }
+.item-title {
+    margin: 0;
+    /* 💡 タイルの幅に合わせて、文字サイズを0.95rem〜0.75remの間で自動伸縮！ */
+    font-size: clamp(0.5rem, 4cqw, 0.95rem);
+    color: #ccc;
+    letter-spacing: 0.05em;
+
+    /* 💡 1行に収めつつ、万が一めちゃくちゃ長いタイトルだったら末尾を「…」にするオシャレ機能 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+</style>

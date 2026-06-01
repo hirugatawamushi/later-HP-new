@@ -1,0 +1,117 @@
+---
+import { useStoryblokApi } from '@storyblok/astro'
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro'
+import WorkLayout from '../../layouts/WorkLayout.astro'
+
+// 💡 1. リアルタイム更新モードにして、古いデータが残るバグを消滅させます
+export const prerender = false;
+
+// Astro.propsではなく、URLの[slug]から直接Storyblokの最新データを一本釣りします
+const { slug } = Astro.params;
+const storyblokApi = useStoryblokApi()
+let story = null
+
+try {
+  const { data } = await storyblokApi.get(`cdn/stories/works/${slug}`, {
+    version: import.meta.env.DEV ? 'draft' : 'published',
+  })
+  story = data.story
+} catch (e) {
+  console.error(`作品 [${slug}] の取得に失敗しました:`, e)
+}
+---
+
+<WorkLayout title={story ? story.name : '作品詳細'}>
+  {story && (
+    <main class="work-detail-page">
+      <div class="container">
+        <a href="/" class="back-button">← 戻る</a>
+        
+        <article class="work-content">
+          {/* 作品の基本タイトル */}
+          <h1 class="work-title">{story.name}</h1>
+
+          {/* 💡 2. ここが最大の魔法！StoryblokのBlocks（入れ子）を上から順番に全部自動でレンダリングします */}
+          {story.content?.body ? (
+            story.content.body.map((blok) => {
+              return <StoryblokComponent blok={blok} />
+            })
+          ) : (
+            <p class="no-blocks">Storyblok側で「body」にブロックが追加されていません。</p>
+          )}
+        </article>
+      </div>
+    </main>
+  )}
+</WorkLayout>
+
+<style>
+  /* --- 🌙 作品詳細ページのカスタムスタイリング --- */
+  
+  .work-detail-page {
+    padding: 4rem 1.5rem;
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    /* 🟢 ページ全体が横にスクロールしちゃうのを絶対に防ぐお守り */
+    overflow-x: hidden; 
+  }
+
+  .container {
+    max-width: 700px;
+    /* 🟢 横幅の限界を画面サイズ（100%）に指定して、これ以上広がらないようにします */
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .back-button {
+    display: inline-block;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    margin-bottom: 3rem;
+    transition: opacity 0.3s;
+  }
+
+  .back-button:hover {
+    opacity: 0.6;
+  }
+
+  /* ブロックたちが縦に美しく並ぶ設定 */
+  .work-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem; /* ブロックとブロックの間の隙間 */
+    /* 🟢 文字に引っ張られて横に広がらないよう、ここも幅100%を厳守させます */
+    width: 100%;
+  }
+
+  .work-title {
+    color: #ffffff;
+    margin: 0 0 1rem 0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    text-align: center;
+    
+    /* 🟢 道幅を100%（コンテナいっぱい）に固定します */
+    width: 100%;
+
+    /* 💡 1. 画面幅に合わせて文字サイズを自動で縮小させる（スマホ用に最小値を少し調整） */
+    font-size: clamp(1.5rem, 7vw, 3rem);
+
+    /* 💡 2. 何が何でも絶対に途中で改行させないお守り */
+    white-space: nowrap;
+
+    /* 💡 3. これで親要素の100%からはみ出た分が、綺麗に「…」になります！ */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .no-blocks {
+    color: #888;
+    font-size: 0.9rem;
+    padding: 2rem 0;
+  }
+</style>

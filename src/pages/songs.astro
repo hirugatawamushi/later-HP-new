@@ -1,0 +1,161 @@
+<!-- ボカロなど、曲関係 -->
+ ---
+import WorkLayout from '../layouts/WorkLayout.astro'
+
+// 💡 あなたのYouTube動画のIDをここに並べるだけ！
+// 例：https://www.youtube.com/watch?v=XXXXXX の「XXXXXX」の部分、
+// またはショート動画 https://youtube.com/shorts/YYYYYY の「YYYYYY」の部分を入れます。11けた
+const YouTubeVideos = [
+  {
+    id: 'la03RXbFz6g', // 1曲目の動画ID（書き換えてね）
+    title: 'タクシーを待つ夜、金曜（short ver.）/Sarah',
+    
+  },
+  {
+    id: 'G5JbHbzMPGI', // 2曲目の動画ID（書き換えてね）
+    title: '擦過傷/知声',
+    
+  },
+  {
+    id: 'cb3Q914iYic', 
+    title: '有線/知声',
+    
+  },
+];
+---
+
+<WorkLayout title="音響標本">
+  <main class="songs-page">
+    <div class="container">
+      <a href="/" class="back-button">← 戻る</a>
+      
+      <h1 class="page-title">曲</h1>
+      <p>る猫名義で作っています。</p>
+      
+      <div class="songs-list">
+        {YouTubeVideos.map((video) => (
+          <div class="song-card">
+            {/* 💡 YouTubeの縦型・スマホ対応レスポンシブ埋め込み枠 */}
+            <div class="video-wrapper">
+              <iframe
+                src={`https://www.youtube.com/embed/${video.id}`}
+                title={video.title}
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
+            
+            <div class="song-info">
+              <h2 class="song-title">{video.title}</h2>
+              <p class="song-description">{video.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </main>
+</WorkLayout>
+
+<style>
+  /* --- 🌙 楽曲一覧ページのスタイリング（サイトの世界観に統一） --- */
+  
+  .songs-page {
+    padding: 4rem 1.5rem;
+    min-height: 100vh;
+    background-color: #e2e2e2; /* いつもの落ち着くグレー */
+    color: #8c8c8c;
+  }
+
+  .container {
+    max-width: 500px; /* 縦型動画が綺麗に収まるように横幅を少しスリムに */
+    margin: 0 auto;
+  }
+
+  .back-button {
+    display: inline-block;
+    color: #8c8c8c;
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-bottom: 3rem;
+  }
+
+  .page-title {
+    font-size: 1.6rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-align: left;
+  }
+
+  .page-subtitle {
+    font-size: 0.85rem;
+    color: #aaa;
+    text-align: center;
+    margin-bottom: 4rem;
+    letter-spacing: 0.05em;
+  }
+
+  /* 縦に美しく並べるリスト */
+  .songs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4rem; /* 曲と曲の間の余白 */
+  }
+
+  .song-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid #d4d4d4; /* 静かな区切り線 */
+  }
+
+  .song-card:last-child {
+    border-bottom: none; /* 最後の線の非表示 */
+  }
+
+  /* 💡 YouTubeを縦型（16:9の縦、あるいは一般的なサイズ）で美しく保つ魔法の枠 */
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    /* 通常の横長なら 56.25% ですが、今回は「縦に並べる」かつスマホでも綺麗に見えるように */
+    /* 1:1の正方形や縦長動画にフィットしやすい黄金比（16:9の比率）にしています */
+    padding-top: 56.25%; 
+    background: #dcdcdc;
+  }
+
+  /* もし「YouTube Shorts（縦長動画）」を完璧な縦型比率（9:16）で埋め込みたい場合は、
+     上の padding-top: 56.25%; を「padding-top: 177.77%;」に変えると完全な縦長になります！ */
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 4px; /* 角をほんの少しだけ丸くして上品に */
+  }
+
+  .song-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .song-title {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+
+  .song-description {
+    font-size: 0.9rem;
+    color: #888;
+    line-height: 1.6;
+    margin: 0;
+  }
+</style>
