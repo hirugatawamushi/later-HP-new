@@ -2,6 +2,8 @@ import { defineConfig } from 'astro/config';
 import { storyblok } from '@storyblok/astro'; // 💡 v9は「{ storyblok }」が正解です！
 import { loadEnv } from 'vite';
 
+import vercel from '@astrojs/vercel';
+
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
@@ -25,4 +27,6 @@ export default defineConfig({
       },
     }),
   ],
+
+  adapter: vercel(),
 });
