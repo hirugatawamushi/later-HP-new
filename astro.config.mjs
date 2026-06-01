@@ -7,6 +7,7 @@ import vercel from '@astrojs/vercel';
 const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export default defineConfig({
+  site: 'https://my-portfolio.vercel.app',
   integrations: [
     storyblok({
       accessToken: env.STORYBLOK_TOKEN,
