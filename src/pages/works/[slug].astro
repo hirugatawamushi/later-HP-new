@@ -1,5 +1,5 @@
 ---
-import { useStoryblokApi } from '@storyblok/astro'
+import { storyblokEditable } from '@storyblok/astro'
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro'
 import WorkLayout from '../../layouts/WorkLayout.astro'
 
@@ -8,7 +8,8 @@ export const prerender = false;
 
 // Astro.propsではなく、URLの[slug]から直接Storyblokの最新データを一本釣りします
 const { slug } = Astro.params;
-const storyblokApi = useStoryblokApi()
+const storyblokApi = storybl
+okEditable()
 let story = null
 
 try {
