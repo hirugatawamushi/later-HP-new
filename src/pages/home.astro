@@ -1,11 +1,11 @@
 ---
-import { useStoryblokApi } from '@storyblok/astro';
+import { storyblokEditable } from '@storyblok/astro';
 // 💡 爆発の原因だった StoryblokComponent を使わずに、ギャラリーを直接狙い撃ちします
 import GridGallery from '../components/GridGallery.astro'; 
 import Header from '../components/Header.astro';
 import BaseHead from '../components/BaseHead.astro'; // 💡 せっかく作った安全版の頭脳をここで使います！
 
-const storyblokApi = useStoryblokApi();
+const storyblokApi = storyblokEditable();
 let galleryBlok = null;
 
 try {
@@ -49,8 +49,8 @@ try {
     </div>
 
     <script>
-      import { useStoryblokApi } from '@storyblok/astro';
-      useStoryblok();
+      import { storyblokEditable } from '@storyblok/astro';
+      storyblokEditable();
     </script>
   </body>
 </html>
