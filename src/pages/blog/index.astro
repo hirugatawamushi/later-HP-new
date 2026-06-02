@@ -1,10 +1,10 @@
 ---
 // 📄 src/pages/blog/index.astro
-import { useStoryblokApi } from '@storyblok/astro'
+import { storyblokEditable } from '@storyblok/astro'
 import Header from '../../components/Header.astro'
 import BaseHead from '../../components/BaseHead.astro'
 
-const storyblokApi = useStoryblokApi()
+const storyblokApi = storyblokEditable()
 let posts = null; // 💡 最初は null（まだデータがない状態）にしておく
 
 try {
