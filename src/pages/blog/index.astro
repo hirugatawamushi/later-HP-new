@@ -8,9 +8,10 @@ const storyblokApi = useStoryblokApi()
 let posts = null; // 💡 最初は null（まだデータがない状態）にしておく
 
 try {
+  // ⭕️ この中身をすべて「:」と「,」の正しい組み合わせに修正します！
   const { data } = await storyblokApi.get('cdn/stories', {
-    version: import.meta.env.DEV ? 'published',
-    starts_with: 'blog/', // 👈 あとでここを実際のフォルダ名に調整します！
+    version: 'published',
+    starts_with: 'blog/', 
     cv: Date.now(), 
   });
   
