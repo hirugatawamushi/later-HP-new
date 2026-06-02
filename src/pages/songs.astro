@@ -59,7 +59,13 @@ const YouTubeVideos = [
 
 <style>
   /* --- 🌙 楽曲一覧ページのスタイリング（サイトの世界観に統一） --- */
-  
+ :global(html), :global(body) {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden; /* 横に白い隙間がはみ出るのを絶対に防ぐ */
+  } 
   .songs-page {
     padding: 4rem 1.5rem;
     min-height: 100vh;
@@ -158,4 +164,5 @@ const YouTubeVideos = [
     line-height: 1.6;
     margin: 0;
   }
+ 
 </style>
