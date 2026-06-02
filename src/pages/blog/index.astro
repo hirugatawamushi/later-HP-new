@@ -1,15 +1,15 @@
 ---
 // 📄 src/pages/blog/index.astro
-import { storyblokEditable } from '@storyblok/astro'
+import { useStoryblokApi } from '@storyblok/astro'
 import Header from '../../components/Header.astro'
 import BaseHead from '../../components/BaseHead.astro'
 
-const storyblokApi = storyblokEditable()
+const storyblokApi = useStoryblokApi()
 let posts = null; // 💡 最初は null（まだデータがない状態）にしておく
 
 try {
   const { data } = await storyblokApi.get('cdn/stories', {
-    version: import.meta.env.DEV ? 'draft' : 'published',
+    version: import.meta.env.DEV ? 'published',
     starts_with: 'blog/', // 👈 あとでここを実際のフォルダ名に調整します！
     cv: Date.now(), 
   });
@@ -70,6 +70,13 @@ try {
 </html>
 
 <style>
+  /* ⭕️ 最強の隙間消しガードを1番上に追記！これですべての余白を強制リセットします */
+  :global(html), :global(body) {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    overflow-x: hidden; /* 横に白い隙間がはみ出るのを絶対に防ぐ */
+  }
   html, body {
     margin: 0;
     padding: 0;
