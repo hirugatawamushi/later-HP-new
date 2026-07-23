@@ -13,6 +13,7 @@ let galleryBlok = null;
 try {
   const { data } = await storyblokApi.get('cdn/stories/home', {
     version:  'published',
+    cv: Date.now(), // 💡 Storyblokのキャッシュを無効化して、常に最新のデータを取得します
   });
 if (data && data.story && data.story.content && data.story.content.body) {
     galleryBlok = data.story.content.body.find((b) => b && b.component === 'GridGallery');

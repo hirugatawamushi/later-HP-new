@@ -9,6 +9,7 @@ try {
   // Storyblokから「aboutme」というURL（Slug）のデータを一本釣りします
   const { data } = await storyblokApi.get('cdn/stories/aboutme', {
     version: import.meta.env.DEV ? 'draft' : 'published',
+    cv: Date.now(), // 💡 Storyblokのキャッシュを無効化して、常に最新のデータを取得します
   })
   profile = data.story
 } catch (e) {

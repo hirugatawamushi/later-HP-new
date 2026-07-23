@@ -30,6 +30,7 @@ let story = null
 try {
   const { data } = await storyblokApi.get(`cdn/stories/blog/${slug}`, {
     version:  'published',
+    cv: Date.now(), // 💡 Storyblokのキャッシュを無効化して、常に最新のデータを取得します
   })
   story = data.story
 } catch (e) {
