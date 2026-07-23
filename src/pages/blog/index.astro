@@ -1,14 +1,11 @@
 ---
 // 📄 src/pages/blog/index.astro
 import { useStoryblokApi } from '@storyblok/astro'
-// import Header from '../../components/Header.astro'
-// import BaseHead from '../../components/BaseHead.astro'
 
 const storyblokApi = useStoryblokApi()
-let posts = null; // 💡 最初は null（まだデータがない状態）にしておく
+let posts = null;
 
 try {
-  // ⭕️ この中身をすべて「:」と「,」の正しい組み合わせに修正します！
   const { data } = await storyblokApi.get('cdn/stories', {
     version: 'published',
     starts_with: 'blog/', 
@@ -24,21 +21,19 @@ try {
 ---
 
 <html lang="ja">
- 
-
-      <a href="/" class="back-button">← 戻る</a>
   <head>
-    <BaseHead title="BLOG" description="ブログ一覧" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BLOG</title>
   </head>
   <body>
     <div class="site-wrapper">
-      <Header />
       
       <main class="main-content">
+        <a href="/" class="back-button">← HOME</a>
         <h1 class="page-title">BLOG</h1>
         
         <div class="blog-grid">
-          {/* 💡 posts にデータがちゃんと入っているときだけループを回す（真っ白防止策！） */}
           {posts && posts.length > 0 ? (
             posts.map((post) => {
               const blogTitle = post.content?.title || post.name;
@@ -61,7 +56,6 @@ try {
               );
             })
           ) : (
-            /* 💡 データが取れなかったときは、真っ白にせずこのメッセージを画面に出す */
             <div style="text-align: center; color: #8c8c8c; padding: 4rem 0; background: rgba(255,255,255,0.02); border-radius: 4px;">
               <p style="margin: 0 0 1rem 0;">ブログ記事（データ）が読み込めませんでした 😢</p>
               <p style="font-size: 0.85rem; color: #666; margin: 0;">Storyblokのフォルダ名が「Blog/」であっているか確認してみてください。</p>
@@ -74,18 +68,16 @@ try {
 </html>
 
 <style>
-  /* ⭕️ 最強の隙間消しガードを1番上に追記！これですべての余白を強制リセットします */
   :global(html), :global(body) {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
-    overflow-x: hidden; /* 横に白い隙間がはみ出るのを絶対に防ぐ */
-    background-color: #e2e2e2; /* いつもの落ち着くグレー */
-      color:#8c8c8c;
+    overflow-x: hidden;
+    background-color: #e2e2e2;
+    color: #8c8c8c;
   }
 
- 
-//wrapperがページの背景を指定している。
+  /* wrapperがページの背景を指定している */
   .site-wrapper {
     min-height: 100vh;
     position: relative;
@@ -131,7 +123,8 @@ try {
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
   }
-    .back-button {
+
+  .back-button {
     display: inline-block;
     color: #8c8c8c;
     text-decoration: none;
@@ -139,7 +132,8 @@ try {
     margin-bottom: 3rem;
     transition: opacity 0.3s;
   }
-    .back-button:hover {
+
+  .back-button:hover {
     opacity: 0.6;
   }
 
