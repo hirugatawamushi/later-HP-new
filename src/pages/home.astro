@@ -12,20 +12,21 @@ let galleryBlok = null;
 
 try {
   const { data } = await storyblokApi.get('cdn/stories/home', {
-    version: import.meta.env.DEV ? 'draft' : 'published',
+    version:  'published',
   });
-  
-  // 💡 Homeのデータの中から、エラーの元になる余計なものを無視して、
-  // いつもの「作品ギャラリー（GridGallery）」のデータだけを安全に抜き出します
-  if (data.story?.content?.body) {
-    galleryBlok = data.story.content.body.find((b) => b.component === 'GridGallery');
-  } else {
-    // もしbodyがなければcontent自体がギャラリーの可能性もあるため念のため退避
-    galleryBlok = data.story?.content;
+if (data && data.story && data.story.content && data.story.content.body) {
+    galleryBlok = data.story.content.body.find((b) => b && b.component === 'GridGallery');
   }
 } catch (e) {
   console.error("Homeデータの取得に失敗しました:", e);
 }
+
+// ⭕️ 最強の安全ガード：もしデータが空っぽだったら、仮の安全な空データを身代わりに入れる！
+if (!galleryBlok) {
+  galleryBlok = { component: 'GridGallery', _uid: 'default-home-gallery', body: [] };
+}
+  // 💡 Homeのデータの中から、エラーの元になる余計なものを無視して、
+  // いつもの「作品ギャラリー（GridGallery）」のデータだけを安全に抜き出します
 ---
 
 <html lang="ja">
